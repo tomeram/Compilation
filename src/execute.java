@@ -57,7 +57,7 @@ public class execute {
 	/* line should be in format: print(Exp) */
 	/* returns 1 if succeeded, 2 if runtime error */
 	public static int executePrint(String line) {
-		int[] expResult = evaluateExp(line.substring(6, line.length()-1));
+		int[] expResult = evaluateExp(line.substring(7, line.length()-1));
 		if (expResult[1] == 1) {
 			Print(expResult[0]);
 			return 1;

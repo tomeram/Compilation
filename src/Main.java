@@ -31,9 +31,9 @@ public class Main {
 
 			while (s.hasNextLine()) {
 				line = s.nextLine();
-				temp = line.split(" ", 2);
+				temp = line.split(" ", 3);
 
-				if (temp.length != 2) {
+				if (temp.length != 3 || !temp[1].equals(":")) {
 					file_lines.put(line_n, "no line, only label/empty line");
 					// TODO change to code numbers...
 				}
@@ -47,10 +47,10 @@ public class Main {
 							file_lines.put(line_n, "label < prev labels");
 							// TODO change to code numbers...
 
-							labels.put(line_n, label);
+							labels.put(label, line_n);
 						} else {
-							file_lines.put(line_n, temp[1]);
-							labels.put(line_n, label);
+							file_lines.put(line_n, temp[2]);
+							labels.put(label, line_n);
 							curr_lbl = label;
 						}
 
@@ -75,19 +75,18 @@ public class Main {
 		Lexer lex = new Lexer();
 		String curr_line = "";
 		String curr_if;
-		int if_res;
+		int ret_val = 0;
 		boolean skip_line;
 
 		create_maps_from_file("test.txt");
 		
-		execute.vars.put("x", 5);
-		execute.vars.put("z", 3);
-
 		line_n = 1;
 
 		runtime: // Outer loop label for runtime breaking.
-		while (true) {// (labels.get(line_n) != null) {
-			curr_line = "x := + 1 x ;";//if(x == x) if(z < x) x := 1 ;";// file_lines.get(line_n); TODO: fix when done.
+		while (file_lines.get(line_n) != null) {
+			curr_line = file_lines.get(line_n);
+			
+			//System.out.println(curr_line);
 
 			// Check for ' ;' at the end of a line.
 			if (!Pattern.matches(".*[ ][;]", curr_line)) {
@@ -101,16 +100,14 @@ public class Main {
 			if (lex.checkIfStmt(curr_line)) {
 				
 				while ((curr_if = Lexer.getFirstIf(curr_line)) != null) {
-					System.out.println(curr_if); // TODO: remove when done debbuging
-
-					if_res = execute.evaluateIfCondition(curr_if.substring(3, curr_if.length() - 1));
+					ret_val = execute.evaluateIfCondition(curr_if.substring(4, curr_if.length() - 1));
 					
-					if (if_res == 0) {
+					if (ret_val == 0) {
 						skip_line = true;
+						line_n++;
 						break;
 					}
-					else if (if_res == 2) {
-						PrintError(line_n, 4);
+					else if (ret_val == 2) {
 						break runtime;
 					}
 					// Trim first if
@@ -124,24 +121,43 @@ public class Main {
 				continue;
 			}
 
-			System.out.println(curr_line + "-");
 			if (lex.checkAssign(curr_line)) {
-				// TODO: Call execute function
-				execute.executeAssignment(curr_line);
-				System.out.println(execute.vars.get("x"));
+				ret_val = execute.executeAssignment(curr_line);
 			}
 
 			else if (lex.checkPrint(curr_line)) {
-				System.out.println("print");
+				execute.executePrint(curr_line);
 			}
 
 			else if (lex.checkGoto(curr_line)) {
-				System.out.println("goto");
+				String[] cmd = curr_line.split(" ");
+				if (cmd.length < 2) {
+					PrintError(line_n, 1);
+					ret_val = 2;
+				}
+				else {
+					Integer i = labels.get(Integer.parseInt(cmd[1]));
+					if (i == null) {
+						PrintError(line_n, 2);
+						ret_val = 2;
+					}
+					else {
+						line_n = i;
+						//System.out.println("goto: " + line_n);
+						continue;
+					}
+				}
 			}
 
+			else {
+				PrintError(line_n, 1);
+				ret_val = 2;
+			}
+			
+			if (ret_val != 2)
+				line_n++;
 			else
-				System.out.println("Error");
-			break;
+				break;
 		}
 	}
 }

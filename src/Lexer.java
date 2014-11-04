@@ -9,12 +9,12 @@ public class Lexer {
 	public static String exp = "([[ ]" + varOrNum + "]|" + specialChar + ")+";
 
 	public static String binOp = "(<|>|[=][=]|[!][=]|[<][=]|[>][=])";
-	public static String ifStmt = "[i][f][\\(](" + var + "[ ]" + binOp + "[ ]"
+	public static String ifStmt = "[i][f][ ][\\(](" + var + "[ ]" + binOp + "[ ]"
 			+ var + ")[\\)]";
 
 	public static String goto_str = "(\\bgoto \\b" + num + ")";
 	
-	public static String print = "(\\bprint\\(\\b" + exp + "[\\)])";
+	public static String print = "(\\bprint \\(\\b" + exp + "[\\)])";
 
 
 	public boolean checkAssign(String line) {
