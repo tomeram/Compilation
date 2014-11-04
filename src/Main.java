@@ -12,7 +12,6 @@ public class Main {
 	// and Yes Tomer, I know you hate globals, we can fix those later :)
 	static Map<Integer, String> file_lines = new HashMap<>();
 	static Map<Integer, Integer> labels = new HashMap<>();
-	static Map<String, Integer> vars;
 	static int line_n = 1;
 
 	public static void PrintError(int line, int code) {
@@ -80,13 +79,15 @@ public class Main {
 		boolean skip_line;
 
 		create_maps_from_file("test.txt");
-		execute.vars = new HashMap<>();
+		
+		execute.vars.put("x", 5);
+		execute.vars.put("z", 3);
 
 		line_n = 1;
 
 		runtime: // Outer loop label for runtime breaking.
 		while (true) {// (labels.get(line_n) != null) {
-			curr_line = "if(x != x) if(z > x) goto 1 ;";// file_lines.get(line_n); TODO: fix when done.
+			curr_line = "x := + 1 x ;";//if(x == x) if(z < x) x := 1 ;";// file_lines.get(line_n); TODO: fix when done.
 
 			// Check for ' ;' at the end of a line.
 			if (!Pattern.matches(".*[ ][;]", curr_line)) {
@@ -102,8 +103,6 @@ public class Main {
 				while ((curr_if = Lexer.getFirstIf(curr_line)) != null) {
 					System.out.println(curr_if); // TODO: remove when done debbuging
 
-					execute.vars.put("x", 5);
-					//execute.vars.put("z", 3);
 					if_res = execute.evaluateIfCondition(curr_if.substring(3, curr_if.length() - 1));
 					
 					if (if_res == 0) {
@@ -125,9 +124,11 @@ public class Main {
 				continue;
 			}
 
+			System.out.println(curr_line + "-");
 			if (lex.checkAssign(curr_line)) {
 				// TODO: Call execute function
-				System.out.println("assign");
+				execute.executeAssignment(curr_line);
+				System.out.println(execute.vars.get("x"));
 			}
 
 			else if (lex.checkPrint(curr_line)) {

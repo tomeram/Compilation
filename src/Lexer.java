@@ -1,12 +1,12 @@
 import java.util.regex.Pattern;
 
 public class Lexer {
-	public static String assign = "[a-z][:][=]";
-	public static String num = "(0|([1-9][0-9]*))";
 	public static String var = "[a-z]";
+	public static String assign = var + "[ ][:][=]";
+	public static String num = "(0|([1-9][0-9]*))";
 	public static String varOrNum = "(" + num + "|" + var + ")";
-	public static String specialChar = "([\\+|\\*|\\\\|-])";
-	public static String exp = "(" + varOrNum + "|" + specialChar + ")+";
+	public static String specialChar = "([ ][\\+|\\*|\\\\|-])";
+	public static String exp = "([[ ]" + varOrNum + "]|" + specialChar + ")+";
 
 	public static String binOp = "(<|>|[=][=]|[!][=]|[<][=]|[>][=])";
 	public static String ifStmt = "[i][f][\\(](" + var + "[ ]" + binOp + "[ ]"

@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -5,7 +6,7 @@ import java.util.Stack;
 public class execute {
 
 	
-	static Map<String, Integer> vars;
+	static Map<String, Integer> vars = new HashMap<>();;
 
 	/* returns int[]: { result, errorCode }. errorCode = 1 if no runtime error occurred */
 	public static int[] evaluateExp(String str) {
