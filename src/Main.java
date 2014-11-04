@@ -20,22 +20,21 @@ public class Main {
 
 	private static void create_maps_from_file(String string) {
 		String line;
-		String[] temp = new String[2];
+		String[] temp = new String[3];
 		Scanner s = null;
 
 		int label;
 		int curr_lbl = 0;
 
 		try {
-			s = new Scanner(new File("test.txt"));
+			s = new Scanner(new File(string));
 
 			while (s.hasNextLine()) {
+				temp = new String[3];
 				line = s.nextLine();
 				temp = line.split(" ", 3);
-
-				if (temp.length != 3 || !temp[1].equals(":")) {
-					file_lines.put(line_n, "no line, only label/empty line");
-					// TODO change to code numbers...
+				if (temp[1] == null || temp[2] == null || temp[1] != ":") {
+					file_lines.put(line_n, "1");
 				}
 
 				else {
@@ -44,9 +43,7 @@ public class Main {
 						label = Integer.parseInt(temp[0]);
 
 						if (curr_lbl > label) {
-							file_lines.put(line_n, "label < prev labels");
-							// TODO change to code numbers...
-
+							file_lines.put(line_n, "3");
 							labels.put(label, line_n);
 						} else {
 							file_lines.put(line_n, temp[2]);
@@ -55,8 +52,8 @@ public class Main {
 						}
 
 					} catch (Exception e) {
-						file_lines.put(line_n, "label not number");
-						// TODO change to code numbers...
+						file_lines.put(line_n, "1");
+				
 					}
 				}
 
@@ -78,7 +75,7 @@ public class Main {
 		int ret_val = 0;
 		boolean skip_line;
 
-		create_maps_from_file("test.txt");
+		create_maps_from_file("example3.txt");
 		
 		line_n = 1;
 
@@ -100,7 +97,7 @@ public class Main {
 			if (lex.checkIfStmt(curr_line)) {
 				
 				while ((curr_if = Lexer.getFirstIf(curr_line)) != null) {
-					ret_val = execute.evaluateIfCondition(curr_if.substring(4, curr_if.length() - 1));
+					ret_val = execute.evaluateIfCondition(curr_if.substring(3, curr_if.length() - 1));
 					
 					if (ret_val == 0) {
 						skip_line = true;
