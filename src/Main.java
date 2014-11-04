@@ -75,43 +75,69 @@ public class Main {
 	public static void main(String args[]) {
 		Lexer lex = new Lexer();
 		String curr_line = "";
+		String curr_if;
+		int if_res;
+		boolean skip_line;
 
 		create_maps_from_file("test.txt");
-		execute.vars = vars;
+		execute.vars = new HashMap<>();
 
 		line_n = 1;
 
+		runtime: // Outer loop label for runtime breaking.
 		while (true) {// (labels.get(line_n) != null) {
-			curr_line = "goto 1 ;";// file_lines.get(line_n);
+			curr_line = "if(x != x) if(z > x) goto 1 ;";// file_lines.get(line_n); TODO: fix when done.
 
 			// Check for ' ;' at the end of a line.
 			if (!Pattern.matches(".*[ ][;]", curr_line)) {
 				PrintError(line_n, 1);
 				break;
 			}
-			
-			curr_line = curr_line.substring(0, curr_line.length() - 2);
 
-			if(lex.checkIfStmt(curr_line)) {
-				// TODO: Call execute function
-				System.out.println("if");
+			curr_line = curr_line.substring(0, curr_line.length() - 2);
+			skip_line = false;
+
+			if (lex.checkIfStmt(curr_line)) {
 				
-				// TODO: while still has if and true
+				while ((curr_if = Lexer.getFirstIf(curr_line)) != null) {
+					System.out.println(curr_if); // TODO: remove when done debbuging
+
+					execute.vars.put("x", 5);
+					//execute.vars.put("z", 3);
+					if_res = execute.evaluateIfCondition(curr_if.substring(3, curr_if.length() - 1));
+					
+					if (if_res == 0) {
+						skip_line = true;
+						break;
+					}
+					else if (if_res == 2) {
+						PrintError(line_n, 4);
+						break runtime;
+					}
+					// Trim first if
+					curr_line = curr_line.substring(curr_if.length() + 1,
+							curr_line.length());
+				}
 			}
 			
-			else if (lex.checkAssign(curr_line)) {
+			if (skip_line) {
+				// if statement was false, no need to continue
+				continue;
+			}
+
+			if (lex.checkAssign(curr_line)) {
 				// TODO: Call execute function
 				System.out.println("assign");
 			}
-			
+
 			else if (lex.checkPrint(curr_line)) {
 				System.out.println("print");
 			}
-			
+
 			else if (lex.checkGoto(curr_line)) {
 				System.out.println("goto");
 			}
-			
+
 			else
 				System.out.println("Error");
 			break;
