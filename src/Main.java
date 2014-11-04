@@ -15,6 +15,10 @@ public class Main {
 	static Map<String, Integer> vars;
 	static int line_n = 1;
 
+	public static void PrintError(int line, int code) {
+		System.out.println("Error! Line:" + line + " Code:" + code);
+	}
+
 	private static void create_maps_from_file(String string) {
 		String line;
 		String[] temp = new String[2];
@@ -77,12 +81,39 @@ public class Main {
 
 		line_n = 1;
 
-		while (labels.get(line_n) != null) {// line_n < file_lines.size()) {
-			curr_line = file_lines.get(line_n);
-			
-			if (Pattern.matches(".*\\b ;\\b", curr_line)) {
-				// TODO: print error and break;
+		while (true) {// (labels.get(line_n) != null) {
+			curr_line = "goto 1 ;";// file_lines.get(line_n);
+
+			// Check for ' ;' at the end of a line.
+			if (!Pattern.matches(".*[ ][;]", curr_line)) {
+				PrintError(line_n, 1);
+				break;
 			}
+			
+			curr_line = curr_line.substring(0, curr_line.length() - 2);
+
+			if(lex.checkIfStmt(curr_line)) {
+				// TODO: Call execute function
+				System.out.println("if");
+				
+				// TODO: while still has if and true
+			}
+			
+			else if (lex.checkAssign(curr_line)) {
+				// TODO: Call execute function
+				System.out.println("assign");
+			}
+			
+			else if (lex.checkPrint(curr_line)) {
+				System.out.println("print");
+			}
+			
+			else if (lex.checkGoto(curr_line)) {
+				System.out.println("goto");
+			}
+			
+			else
+				System.out.println("Error");
 			break;
 		}
 	}

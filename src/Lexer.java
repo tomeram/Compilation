@@ -5,12 +5,11 @@ public class Lexer {
 	public String num = "(0|([1-9][0-9]*))";
 	public String varOrNum = "(" + num + "|[a-z])";
 	public String specialChar = "([\\+|\\*|\\\\|-])";
-	public String exp = "(" + varOrNum + "|" + specialChar + ")*";
+	public String exp = "(" + varOrNum + "|" + specialChar + ")+";
 
 	public String binOp = "(<|>|[=][=]|[!][=]|[<][=]|[>][=])";
 	public String ifStmt = "[i][f][\\(](" + varOrNum + "[ ]" + binOp + "[ ]"
 			+ varOrNum + ")[\\)]";
-	public String ifStmt2 = "[[ ]" + ifStmt + "]*";
 
 	public String goto_str = "(\\bgoto \\b" + num + ")";
 	
@@ -22,7 +21,7 @@ public class Lexer {
 	}
 	
 	public boolean checkIfStmt(String line) {
-		return Pattern.matches(ifStmt + ifStmt2, line);
+		return Pattern.matches("(" + ifStmt + "[ ])+" + "((" + assign + exp + ")|" + goto_str + "|" + print + ")", line);
 	}
 	
 	public boolean checkGoto(String line) {
